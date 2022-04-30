@@ -1,6 +1,6 @@
 import { ColidableI, DamagableI, DrawableObjectManagerI, GameI, GameMapI, PhysycalObjectManagerI, PlayerI, RendererI } from './types';
 
-let gametimer: number;
+let gametimer: NodeJS.Timer;
 
 export class Game implements GameI {
     map: GameMapI;

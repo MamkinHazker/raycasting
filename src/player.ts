@@ -1,6 +1,6 @@
 import { ColidableI, DamagableI, GameMapI, GunI, isDamaging, PlayerI, Position } from './types';
 
-let attackingTimer: number;
+let attackingTimer: NodeJS.Timer;
 
 export class Player implements DamagableI, ColidableI, PlayerI {
     discriminator: 'Damagable' = 'Damagable';

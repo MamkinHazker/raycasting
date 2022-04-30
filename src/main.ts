@@ -22,6 +22,8 @@ const pixelSize: PixelSize = { x: width / resolutionX, y: height / resolutionY }
 
 const ctx = canvas.getContext('2d');
 
+if(!ctx) throw new Error('Something wrong with canvas');
+
 const map: GameMap = new GameMap(
     [
         '#############',
