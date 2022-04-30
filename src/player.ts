@@ -3,7 +3,7 @@ import { ColidableI, DamagableI, GameMapI, GunI, isDamaging, PlayerI, Position }
 let attackingTimer: number;
 
 export class Player implements DamagableI, ColidableI, PlayerI {
-    discriminator: 'Damagable';
+    discriminator: 'Damagable' = 'Damagable';
     hp = 100
     movingForward = false;
     movingBack = false;
@@ -11,7 +11,7 @@ export class Player implements DamagableI, ColidableI, PlayerI {
     movingLeft = false;
     isRunning = false;
     position: Position;
-    gun: GunI;
+    gun: GunI | undefined;
 
     get isRemoved(): boolean {
         return this.hp > 0;
@@ -38,7 +38,7 @@ export class Player implements DamagableI, ColidableI, PlayerI {
         if (this.movingForward) {
             this.position.x += Math.sin(this.position.angle) * speed
             this.position.y += Math.cos(this.position.angle) * speed
-            if (map[Math.floor(this.position.x)][Math.floor(this.position.y)] == '#') {
+            if (map.value[Math.floor(this.position.x)][Math.floor(this.position.y)] == '#') {
                 this.position.x -= Math.sin(this.position.angle) * speed
                 this.position.y -= Math.cos(this.position.angle) * speed
             }
@@ -46,7 +46,7 @@ export class Player implements DamagableI, ColidableI, PlayerI {
         if (this.movingBack) {
             this.position.x -= Math.sin(this.position.angle) * speed
             this.position.y -= Math.cos(this.position.angle) * speed
-            if (map[Math.floor(this.position.x)][Math.floor(this.position.y)] == '#') {
+            if (map.value[Math.floor(this.position.x)][Math.floor(this.position.y)] == '#') {
                 this.position.x += Math.sin(this.position.angle) * speed
                 this.position.y += Math.cos(this.position.angle) * speed
             }
@@ -54,7 +54,7 @@ export class Player implements DamagableI, ColidableI, PlayerI {
         if (this.movingRight) {
             this.position.x += (Math.cos(this.position.angle) * speed) / 2
             this.position.y -= (Math.sin(this.position.angle) * speed) / 2
-            if (map[Math.floor(this.position.x)][Math.floor(this.position.y)] == '#') {
+            if (map.value[Math.floor(this.position.x)][Math.floor(this.position.y)] == '#') {
                 this.position.x -= (Math.cos(this.position.angle) * speed) / 2
                 this.position.y += (Math.sin(this.position.angle) * speed) / 2
             }
@@ -62,7 +62,7 @@ export class Player implements DamagableI, ColidableI, PlayerI {
         if (this.movingLeft) {
             this.position.x -= (Math.cos(this.position.angle) * speed) / 2
             this.position.y += (Math.sin(this.position.angle) * speed) / 2
-            if (map[Math.floor(this.position.x)][Math.floor(this.position.y)] == '#') {
+            if (map.value[Math.floor(this.position.x)][Math.floor(this.position.y)] == '#') {
                 this.position.x += (Math.cos(this.position.angle) * speed) / 2
                 this.position.y -= (Math.sin(this.position.angle) * speed) / 2
             }
@@ -76,7 +76,7 @@ export class Player implements DamagableI, ColidableI, PlayerI {
     }
 
     startAttacking() {
-        attackingTimer = setInterval(this.gun.fire, 17);
+        attackingTimer = setInterval(() => { this.gun?.fire(this.position) }, 17);
     }
 
     stopAttacking() {

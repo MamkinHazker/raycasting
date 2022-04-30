@@ -20,6 +20,13 @@ class Auto implements GunI{
         this.sprite.playAnimation(this.fireRate);
         setTimeout(() => this.canShoot = true, this.fireRate);
     }
+
+    constructor() {
+        this.damage = 0;
+        this.fireRate = 100;
+        this.canShoot = false;
+        this.physicalObjectManager = [];
+    }
 }
 
 export class AK_47 extends Auto implements GunI { 

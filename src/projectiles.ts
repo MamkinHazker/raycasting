@@ -8,7 +8,7 @@ bullet.src = './static/src/img/bullet.png';
 export class Bullet implements DrawableI, DamagingI, ColidableI {
     discriminator: 'Damaging' = 'Damaging';
     sprite = new Sprite(bullet);
-    z: number;
+    z: number = .47;
     damage: number;
     position: Position;
     isColided = true;
@@ -17,7 +17,7 @@ export class Bullet implements DrawableI, DamagingI, ColidableI {
         return this.isColided;
     }
 
-    constructor(damage, position) {
+    constructor(damage: number, position: Position) {
         this.damage = damage
         position.x = position.x + Math.sin(position.angle) * .5
         position.y = position.y + Math.cos(position.angle) * .5

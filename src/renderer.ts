@@ -46,21 +46,21 @@ export class Renderer implements RendererI {
                 const testY = position.y + eyeY * distanceToTheWall;
                 const nTestX = Math.floor(testX);
                 const nTestY = Math.floor(testY);
-                if (this.map[nTestX][nTestY] == '#') {
+                if (this.map.value[nTestX][nTestY] == '#') {
                     const testAngle = Math.abs(Math.atan2(testY - (nTestY + 0.5), testX - (nTestX + 0.5)));
+                    const ceiling = this.height / 2 - this.height / distanceToTheWall;
+                    const floor = this.height - ceiling;
                     if (testAngle > Math.PI * 0.75 || testAngle < Math.PI * 0.25)
                         textureStartPoint = testY - nTestY;
                     else
                         textureStartPoint = testX - nTestX;
+                    this.drawTexture(x * this.pixelSize.x, ceiling, floor - ceiling, textureStartPoint, wall);
                     break;
                 } else if (nTestX < 0 || testX >= this.map.width || nTestY < 0 || testY >= this.map.height) {
                     distanceToTheWall = this.depth;
                     break;
                 }
             }
-            const ceiling = this.height / 2 - this.height / distanceToTheWall;
-            const floor = this.height - ceiling;
-            this.drawTexture(x * this.pixelSize[0], ceiling, floor - ceiling, textureStartPoint, wall);
             DepthBufer[x] = distanceToTheWall;
         }
 
@@ -76,7 +76,7 @@ export class Renderer implements RendererI {
             const objHeight = 2 * image.height / distance
             const objWidth = objHeight / image.height * image.width
             const x = this.width * ((angle + this.FOV / 2) / this.FOV)
-            if (DepthBufer[Math.round(x / this.pixelSize[0])] < distance) continue;
+            if (DepthBufer[Math.round(x / this.pixelSize.x)] < distance) continue;
             const z = (this.height / (this.height - objects[i].z + image.height)) * objects[i].z
             const y = this.height - (this.height / 2 - this.height / distance) - z / distance
             this.drawObject(objects[i].sprite, x - objWidth / 2, y - objHeight, objWidth, objHeight)
@@ -84,8 +84,9 @@ export class Renderer implements RendererI {
     }
 
     drawGun(player: PlayerI): void {
+        const sprite = player.gun?.sprite;
+        if(!sprite) return;
         const { isRunning, isMoving } = player;
-        const sprite = player.gun.sprite;
         const ratio = (isRunning) ? 60 : 100
         const bias = (isMoving) ? Math.cos(Date.now() / ratio) * (30 * (100 / ratio)) : 0
         const { sx, sy, sWidth, sHeight } = sprite.getFrame();
@@ -115,7 +116,7 @@ export class Renderer implements RendererI {
         this.ctx.fillStyle = '#FFF'
         for (let i = 0; i < this.map.width; i++) {
             for (let j = 0; j < this.map.height; j++) {
-                if (this.map[i][j] == '#')
+                if (this.map.value[i][j] == '#')
                     this.ctx.fillRect(mapSize - i * pixel + 15, j * pixel, pixel, pixel)
             }
         }
@@ -146,10 +147,10 @@ export class Renderer implements RendererI {
     }
 
     drawTexture(x: number, y: number, height: number, startPos: number, texture: HTMLImageElement) {
-        this.ctx.drawImage(wall, wall.width * startPos, 0, this.pixelSize[0], wall.height, x, y, this.pixelSize[0], this.height);
+        this.ctx.drawImage(wall, wall.width * startPos, 0, this.pixelSize.x, wall.height, x, y, this.pixelSize.y, this.height);
     }
 
-    drawObject(sprite: SpriteI, x, y, objWidth, objHeight) {
+    drawObject(sprite: SpriteI, x: number, y: number, objWidth: number, objHeight: number) {
         this.ctx.drawImage(sprite.sprite, x, y, objWidth, objHeight);
     }
 }

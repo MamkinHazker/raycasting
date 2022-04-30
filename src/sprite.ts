@@ -30,7 +30,7 @@ export class AnimatedSprite implements SpriteI{
         }, time / this.framesCount);
     };
 
-    switchAnimation(animationIndex) {
+    switchAnimation(animationIndex: number) {
         if (animationIndex >= this.animationsCount)
             animationIndex = this.animationsCount - 1
         this.currentAnimation = animationIndex

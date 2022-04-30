@@ -25,10 +25,16 @@ export class Game implements GameI {
                 const colidee = this.physicalObjects[j];
                 if (!colider.colides(colidee)) return;
                 colider.handleCollision(colidee);
-                if (colider.isRemoved) this.physicalObjects[i] = undefined;
+                if (colider.isRemoved) {
+                    this.physicalObjects.splice(i, 1);
+                    i--;
+                }
+                if (colidee.isRemoved) {
+                    this.physicalObjects.splice(j, 1);
+                    j--;
+                }
             }
         }
-        this.physicalObjects = this.physicalObjects.filter((obj) => obj === undefined);
         this.physicalObjects.pop();
     }
 
@@ -37,7 +43,7 @@ export class Game implements GameI {
             this.renderer.drawFrame(this.player.position, this.drawableObjects);
             this.renderer.drawGun(this.player);
             this.renderer.drawUI(this.player.position, this.player.hp);
-            if(this.player.isRemoved) this.stop();
+            if (this.player.isRemoved) this.stop();
         }, 17);
     }
 
