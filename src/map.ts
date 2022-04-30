@@ -1,4 +1,4 @@
-import { GameMapI } from './types'
+import { GameMapI } from './types';
 
 export class GameMap implements GameMapI {
     value: string[];

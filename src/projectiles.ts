@@ -8,7 +8,7 @@ bullet.src = './static/src/img/bullet.png';
 export class Bullet implements DrawableI, DamagingI, ColidableI {
     discriminator: 'Damaging' = 'Damaging';
     sprite = new Sprite(bullet);
-    z: number = .47;
+    z = .47;
     damage: number;
     position: Position;
     isColided = true;
@@ -18,16 +18,16 @@ export class Bullet implements DrawableI, DamagingI, ColidableI {
     }
 
     constructor(damage: number, position: Position) {
-        this.damage = damage
-        position.x = position.x + Math.sin(position.angle) * .5
-        position.y = position.y + Math.cos(position.angle) * .5
+        this.damage = damage;
+        position.x = position.x + Math.sin(position.angle) * .5;
+        position.y = position.y + Math.cos(position.angle) * .5;
         this.position = position;
-        setInterval(() => this.updatePosition(), 1)
+        setInterval(() => this.updatePosition(), 1);
     }
 
     updatePosition() {
-        this.position.x += Math.sin(this.position.angle) * .4
-        this.position.y += Math.cos(this.position.angle) * .4
+        this.position.x += Math.sin(this.position.angle) * .4;
+        this.position.y += Math.cos(this.position.angle) * .4;
     }
 
     dealDamage(to: DamagableI) {

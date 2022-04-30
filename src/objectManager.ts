@@ -1,4 +1,4 @@
-import { DamagableI, DamagingI, DrawableI, DrawableObjectManagerI, PhysycalObjectManagerI } from './types'
+import { DamagableI, DamagingI, DrawableI, DrawableObjectManagerI, PhysycalObjectManagerI } from './types';
 
 export class DrawableObjectManager extends Array<DrawableI> implements DrawableObjectManagerI {
 

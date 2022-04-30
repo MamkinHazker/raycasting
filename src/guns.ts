@@ -1,9 +1,9 @@
-import { Bullet } from "./projectiles";
-import { AnimatedSprite } from "./sprite";
-import { GunI, PhysycalObjectManagerI, Position } from "./types";
+import { Bullet } from './projectiles';
+import { AnimatedSprite } from './sprite';
+import { GunI, PhysycalObjectManagerI, Position } from './types';
 
-const pistol = new Image()
-pistol.src = "./static/src/img/glock.png"
+const pistol = new Image();
+pistol.src = './static/src/img/glock.png';
 
 
 class Auto implements GunI{
@@ -30,9 +30,9 @@ class Auto implements GunI{
 }
 
 export class AK_47 extends Auto implements GunI { 
-    damage: number = 100;
-    fireRate: number = 200;
-    canShoot: boolean = true;
+    damage = 100;
+    fireRate = 200;
+    canShoot = true;
     physicalObjectManager: PhysycalObjectManagerI;
 
     constructor(physicalObjectManager: PhysycalObjectManagerI) {

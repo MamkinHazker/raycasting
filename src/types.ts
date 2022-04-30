@@ -1,4 +1,4 @@
-import { AnimatedSprite, Sprite } from "./sprite";
+import { AnimatedSprite, Sprite } from './sprite';
 
 export type PixelSize = {
     x: number,
@@ -69,13 +69,9 @@ export interface DrawableI {
     z: number;
 }
 
-export interface DrawableObjectManagerI extends Array<DrawableI> {
+export type DrawableObjectManagerI = Array<DrawableI>
 
-}
-
-export interface PhysycalObjectManagerI extends Array<ColidableI & (DamagableI | DamagingI)> {
-
-}
+export type PhysycalObjectManagerI = Array<ColidableI & (DamagableI | DamagingI)>
 
 export interface RendererI {
     map: GameMapI;

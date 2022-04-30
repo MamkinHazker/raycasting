@@ -1,18 +1,18 @@
-import { Game } from "./game";
-import { AK_47 } from "./guns";
-import { GameMap } from "./map";
-import { Player } from "./player";
-import { prepareDocument } from "./prepare";
-import { Renderer } from "./renderer";
-import { PixelSize } from "./types";
+import { Game } from './game';
+import { AK_47 } from './guns';
+import { GameMap } from './map';
+import { Player } from './player';
+import { prepareDocument } from './prepare';
+import { Renderer } from './renderer';
+import { PixelSize } from './types';
 
 const canvas = (document.getElementById('canvas') as HTMLCanvasElement);
 
-canvas.width = document.body.clientWidth
-canvas.height = document.body.clientHeight
+canvas.width = document.body.clientWidth;
+canvas.height = document.body.clientHeight;
 
-const width = canvas.width
-const height = canvas.height
+const width = canvas.width;
+const height = canvas.height;
 
 const resolutionX = 800;
 const resolutionY = height * (800 / width);
@@ -20,7 +20,7 @@ const resolutionY = height * (800 / width);
 const resolution = { x: resolutionX, y: resolutionY };
 const pixelSize: PixelSize = { x: width / resolutionX, y: height / resolutionY };
 
-const ctx = canvas.getContext('2d')
+const ctx = canvas.getContext('2d');
 
 const map: GameMap = new GameMap(
     [
