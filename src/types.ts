@@ -1,9 +1,30 @@
-import { Sprite } from "./sprite";
+import { AnimatedSprite, Sprite } from "./sprite";
+
+export type PixelSize = {
+    x: number,
+    y: number
+};
 
 export type Position = {
     x: number,
     y: number,
     angle: number
+}
+
+export interface SpriteI {
+    sprite: HTMLImageElement;
+}
+
+export interface GameMapI {
+    value: string[];
+    get height(): number;
+    get width(): number;
+}
+
+export interface GunI {
+    sprite: AnimatedSprite;
+    physicalObjectManager: PhysycalObjectManagerI;
+    fire(position: Position): void;
 }
 
 export interface PlayerI {
@@ -13,28 +34,47 @@ export interface PlayerI {
     movingLeft: boolean;
     movingRight: boolean;
     position: Position;
-    gun: any;
+    gun: GunI;
     isRunning: boolean;
     isMoving: boolean;
-    updatePosition(): void;
+    updatePosition(map: GameMapI): void;
     updateAngle(movementX: number): void;
     startAttacking(): void;
     stopAttacking(): void;
 }
 
-export interface GameI {
-    player: PlayerI;
+export interface ColidableI {
+    position: Position;
+    colides(colidee: ColidableI): boolean;
+    handleCollision(colidee: ColidableI): void;
 }
 
-export type PixelSize = {
-    x: number,
-    y: number
-};
+export interface DamagingI {
+    discriminator: 'Damaging';
+    position: Position;
+    get isRemoved(): boolean;
+    dealDamage(to: DamagableI): void;
+}
 
-export interface GameMapI {
-    value: string[];
-    get height(): number;
-    get width(): number;
+export interface DamagableI {
+    discriminator: 'Damagable';
+    position: Position;
+    get isRemoved(): boolean;
+    takeDamage(damage: number): void;
+}
+
+export interface DrawableI {
+    position: Position;
+    sprite: SpriteI;
+    z: number;
+}
+
+export interface DrawableObjectManagerI extends Array<DrawableI> {
+
+}
+
+export interface PhysycalObjectManagerI extends Array<ColidableI & (DamagableI | DamagingI)> {
+
 }
 
 export interface RendererI {
@@ -44,10 +84,29 @@ export interface RendererI {
     pixelSize: PixelSize;
     FOV: number;
     depth: number;
-    drawFrame(position: Position): void;
-    drawGun(sprite: Sprite, isRunning: boolean, isMoving: boolean): void
+    drawFrame(position: Position, objects: DrawableI[]): void;
+    drawGun(player: PlayerI): void;
     drawUI(position: Position, hpLevel: number): void;
     drawRect(x: number, y: number, height: number, color: string): void;
     drawTexture(x: number, y: number, height: number, startPos: number, texture: HTMLImageElement);
     drawObject(sprite: Sprite, x, y, objWidth, objHeight);
+}
+
+export interface GameI {
+    map: GameMapI;
+    player: PlayerI;
+    renderer: RendererI;
+    physicalObjects: PhysycalObjectManagerI;
+    drawableObjects: DrawableObjectManagerI;
+    handleCollisions(): void;
+    start(): void;
+    stop(): void;
+}
+
+export function isDamagable(object: any): object is DamagableI {
+    return object.discriminator === 'Damagable';
+}
+
+export function isDamaging(object: any): object is DamagingI {
+    return object.discriminator === 'Damaging';
 }

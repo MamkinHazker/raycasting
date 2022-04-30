@@ -1,6 +1,6 @@
 import { GameI } from './types';
 
-function prepareDocument(canvas: HTMLCanvasElement, game: GameI) {
+export function prepareDocument(canvas: HTMLCanvasElement, game: GameI) {
     let lock = false;
 
     document.addEventListener('keydown', (e) => {
@@ -50,7 +50,7 @@ function prepareDocument(canvas: HTMLCanvasElement, game: GameI) {
     })
 
     document.addEventListener('mouseup', (e) => {
-        if (e.button == 0) game.player.startAttacking()
+        if (e.button == 0) game.player.stopAttacking()
     })
 
     document.addEventListener('mousemove', (e) => {

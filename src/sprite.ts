@@ -1,4 +1,6 @@
-export class Sprite {
+import { SpriteI } from './types';
+
+export class AnimatedSprite implements SpriteI{
     sprite: HTMLImageElement;
     frameWidth: number;
     frameHeight: number;
@@ -37,4 +39,11 @@ export class Sprite {
     getFrame() {
         return { sx: this.currentFrame * this.frameWidth, sy: this.currentAnimation * this.frameHeight, sWidth: this.frameWidth, sHeight: this.frameHeight }
     };
+}
+
+export class Sprite implements SpriteI {
+    sprite: HTMLImageElement;
+    constructor(sprite: HTMLImageElement) {
+        this.sprite = sprite;
+    }
 }
