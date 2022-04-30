@@ -1,12 +1,12 @@
-import { Sprite } from "./sprite";
-import { ColidableI, DamagableI, DrawableI, GameMapI, isDamaging, Position } from "./types";
+import { Sprite } from './sprite';
+import { ColidableI, DamagableI, DrawableI, GameMapI, isDamaging, Position } from './types';
 
 
 const enemy = new Image(900);
-enemy.src = "./static/src/img/enemy.png";
+enemy.src = './static/src/img/enemy.png';
 
 class Enemy implements DrawableI, DamagableI, ColidableI {
-    discriminator: "Damagable" = "Damagable";
+    discriminator: 'Damagable' = 'Damagable';
     hp = 100;
     sprite = new Sprite(enemy);
     z = -5;
@@ -23,18 +23,18 @@ class Enemy implements DrawableI, DamagableI, ColidableI {
     }
 
     walk(map: GameMapI) {
-        const speed = .05
-        this.position.x += Math.sin(this.position.angle) * speed
-        this.position.y += Math.cos(this.position.angle) * speed
+        const speed = .05;
+        this.position.x += Math.sin(this.position.angle) * speed;
+        this.position.y += Math.cos(this.position.angle) * speed;
         if (map.value[Math.floor(this.position.x)][Math.floor(this.position.y)] == '#') {
-            this.position.x -= Math.sin(this.position.angle) * speed
-            this.position.y -= Math.cos(this.position.angle) * speed
-            this.position.angle = Math.random() * Math.PI * 2 - Math.PI
+            this.position.x -= Math.sin(this.position.angle) * speed;
+            this.position.y -= Math.cos(this.position.angle) * speed;
+            this.position.angle = Math.random() * Math.PI * 2 - Math.PI;
         }
     }
 
     updateAng() {
-        this.position.angle = Math.random() * Math.PI * 2 - Math.PI
+        this.position.angle = Math.random() * Math.PI * 2 - Math.PI;
     }
 
     fireBullet() {
