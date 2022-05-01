@@ -1,4 +1,4 @@
-import { AnimatedSprite, Sprite } from './sprite';
+import { AnimatedSprite, Sprite } from './sprite.js';
 
 export type PixelSize = {
     x: number,

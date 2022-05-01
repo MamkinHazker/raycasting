@@ -1,6 +1,6 @@
-import { Bullet } from './projectiles';
-import { AnimatedSprite } from './sprite';
-import { GunI, PhysycalObjectManagerI, Position } from './types';
+import { Bullet } from './projectiles.js';
+import { AnimatedSprite } from './sprite.js';
+import { GunI, PhysycalObjectManagerI, Position } from './types.js';
 
 const pistol = new Image();
 pistol.src = './static/src/img/glock.png';

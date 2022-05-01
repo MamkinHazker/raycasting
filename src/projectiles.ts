@@ -1,6 +1,6 @@
 
-import { Sprite } from './sprite';
-import { ColidableI, DamagableI, DamagingI, DrawableI, isDamagable, Position } from './types';
+import { Sprite } from './sprite.js';
+import { ColidableI, DamagableI, DamagingI, DrawableI, isDamagable, Position } from './types.js';
 
 const bullet = new Image();
 bullet.src = './static/src/img/bullet.png';

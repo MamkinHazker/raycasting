@@ -1,4 +1,4 @@
-import { GameI } from './types';
+import { GameI } from './types.js';
 
 export function prepareDocument(canvas: HTMLCanvasElement, game: GameI) {
     let lock = false;

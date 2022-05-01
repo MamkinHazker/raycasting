@@ -1,5 +1,5 @@
-import { Sprite } from './sprite';
-import { ColidableI, DamagableI, DrawableI, GameMapI, isDamaging, Position } from './types';
+import { Sprite } from './sprite.js';
+import { ColidableI, DamagableI, DrawableI, GameMapI, isDamaging, Position } from './types.js';
 
 
 const enemy = new Image(900);

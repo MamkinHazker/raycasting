@@ -1,6 +1,6 @@
-import { AnimatedSprite } from './sprite';
-import { PlayerI, SpriteI } from './types';
-import { Position, RendererI, GameMapI, PixelSize, DrawableObjectManagerI } from './types';
+import { AnimatedSprite } from './sprite.js';
+import { PlayerI, SpriteI } from './types.js';
+import { Position, RendererI, GameMapI, PixelSize, DrawableObjectManagerI } from './types.js';
 
 const wall = new Image();
 wall.src = './static/src/img/wall.jpg';

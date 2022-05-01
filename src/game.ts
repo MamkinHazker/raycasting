@@ -1,4 +1,4 @@
-import { ColidableI, DamagableI, DrawableObjectManagerI, GameI, GameMapI, PhysycalObjectManagerI, PlayerI, RendererI } from './types';
+import { ColidableI, DamagableI, DrawableObjectManagerI, GameI, GameMapI, PhysycalObjectManagerI, PlayerI, RendererI } from './types.js';
 
 let gametimer: NodeJS.Timer;
 

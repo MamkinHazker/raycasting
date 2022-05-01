@@ -1,4 +1,4 @@
-import { SpriteI } from './types';
+import { SpriteI } from './types.js';
 
 export class AnimatedSprite implements SpriteI{
     sprite: HTMLImageElement;

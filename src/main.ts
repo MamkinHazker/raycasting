@@ -1,10 +1,10 @@
-import { Game } from './game';
-import { AK_47 } from './guns';
-import { GameMap } from './map';
-import { Player } from './player';
-import { prepareDocument } from './prepare';
-import { Renderer } from './renderer';
-import { PixelSize } from './types';
+import { Game } from './game.js';
+import { AK_47 } from './guns.js';
+import { GameMap } from './map.js';
+import { Player } from './player.js';
+import { prepareDocument } from './prepare.js';
+import { Renderer } from './renderer.js';
+import { PixelSize } from './types.js';
 
 const canvas = (document.getElementById('canvas') as HTMLCanvasElement);
 

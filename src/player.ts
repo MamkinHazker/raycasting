@@ -1,4 +1,4 @@
-import { ColidableI, DamagableI, GameMapI, GunI, isDamaging, PlayerI, Position } from './types';
+import { ColidableI, DamagableI, GameMapI, GunI, isDamaging, PlayerI, Position } from './types.js';
 
 let attackingTimer: NodeJS.Timer;
 
