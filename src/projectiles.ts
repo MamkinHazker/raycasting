@@ -3,7 +3,7 @@ import { Sprite } from './sprite.js';
 import { ColidableI, DamagableI, DamagingI, DrawableI, isDamagable, Position } from './types.js';
 
 const bullet = new Image();
-bullet.src = './static/src/img/bullet.png';
+bullet.src = './img/bullet.png';
 
 export class Bullet implements DrawableI, DamagingI, ColidableI {
     discriminator: 'Damaging' = 'Damaging';

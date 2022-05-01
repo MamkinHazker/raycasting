@@ -3,7 +3,7 @@ import { ColidableI, DamagableI, DrawableI, GameMapI, isDamaging, Position } fro
 
 
 const enemy = new Image(900);
-enemy.src = './static/src/img/enemy.png';
+enemy.src = './img/enemy.png';
 
 class Enemy implements DrawableI, DamagableI, ColidableI {
     discriminator: 'Damagable' = 'Damagable';

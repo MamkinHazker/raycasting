@@ -3,7 +3,7 @@ import { PlayerI, SpriteI } from './types.js';
 import { Position, RendererI, GameMapI, PixelSize, DrawableObjectManagerI } from './types.js';
 
 const wall = new Image();
-wall.src = './static/src/img/wall.jpg';
+wall.src = './img/wall.jpg';
 
 export class Renderer implements RendererI {
     map: GameMapI;

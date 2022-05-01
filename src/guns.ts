@@ -3,7 +3,7 @@ import { AnimatedSprite } from './sprite.js';
 import { GunI, PhysycalObjectManagerI, Position } from './types.js';
 
 const pistol = new Image();
-pistol.src = './static/src/img/glock.png';
+pistol.src = './img/glock.png';
 
 
 class Auto implements GunI{
