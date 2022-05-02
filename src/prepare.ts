@@ -3,43 +3,42 @@ import { GameI } from './types.js';
 export function prepareDocument(canvas: HTMLCanvasElement, game: GameI) {
     let lock = false;
     document.addEventListener('keydown', (e) => {
-        let key = e.key || e.keyCode;
+        let key = e.code;
         switch (key) {
-        case 87:
-            debugger;
+        case 'KeyW':
             game.player.movingForward = true;
             break;
-        case 83:
+        case 'KeyS':
             game.player.movingBack = true;
             break;
-        case 68:
+        case 'KeyD':
             game.player.movingRight = true;
             break;
-        case 65:
+        case 'KeyA':
             game.player.movingLeft = true;
             break;
-        case 16:
+        case 'ShiftLeft':
             game.player.isRunning = true;
             break;
         }
     });
 
     document.addEventListener('keyup', (e) => {
-        let key = e.key || e.keyCode;
+        let key = e.code;
         switch (key) {
-        case 87:
+        case 'KeyW':
             game.player.movingForward = false;
             break;
-        case 83:
+        case 'KeyS':
             game.player.movingBack = false;
             break;
-        case 68:
+        case 'KeyD':
             game.player.movingRight = false;
             break;
-        case 65:
+        case 'KeyA':
             game.player.movingLeft = false;
             break;
-        case 16:
+        case 'ShiftLeft':
             game.player.isRunning = false;
             break;
         }
