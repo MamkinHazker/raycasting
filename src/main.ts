@@ -50,7 +50,7 @@ const game = new Game(map, player, renderer);
 
 prepareDocument(canvas, game);
 
-const gun = new AK_47(game.physicalObjects);
+const gun = new AK_47(game.objectManager);
 
 player.takeWeapon(gun);
 

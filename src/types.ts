@@ -22,8 +22,8 @@ export interface GameMapI {
 }
 
 export interface GunI {
+    objectManager: ObjectManagerI;
     sprite: AnimatedSprite;
-    physicalObjectManager: PhysycalObjectManagerI;
     fire(position: Position): void;
 }
 
@@ -44,7 +44,9 @@ export interface PlayerI {
 }
 
 export interface ColidableI {
+    physicalDiscriminator: 'Physical';
     position: Position;
+    get isRemoved(): boolean;
     colides(colidee: ColidableI): boolean;
     handleCollision(colidee: ColidableI): void;
 }
@@ -52,26 +54,33 @@ export interface ColidableI {
 export interface DamagingI {
     discriminator: 'Damaging';
     position: Position;
-    get isRemoved(): boolean;
     dealDamage(to: DamagableI): void;
 }
 
 export interface DamagableI {
     discriminator: 'Damagable';
     position: Position;
-    get isRemoved(): boolean;
     takeDamage(damage: number): void;
 }
 
 export interface DrawableI {
+    drawableDiscriminator: 'Drawable';
     position: Position;
     sprite: SpriteI;
     z: number;
 }
 
-export type DrawableObjectManagerI = Array<DrawableI>
+export type DrawableObject = DrawableI;
+export type DrawableObjectManagerI = Array<DrawableObject>
 
-export type PhysycalObjectManagerI = Array<ColidableI & (DamagableI | DamagingI)>
+export type PhysicalObject = ColidableI;
+export type PhysicalObjectManagerI = Array<PhysicalObject>
+
+export interface ObjectManagerI {
+    drawableObjects: DrawableObjectManagerI;
+    physicalObjects: PhysicalObjectManagerI;
+    push(obj: PhysicalObject | DrawableI): void;
+}
 
 export interface RendererI {
     map: GameMapI;
@@ -92,8 +101,7 @@ export interface GameI {
     map: GameMapI;
     player: PlayerI;
     renderer: RendererI;
-    physicalObjects: PhysycalObjectManagerI;
-    drawableObjects: DrawableObjectManagerI;
+    objectManager: ObjectManagerI;
     handleCollisions(): void;
     start(): void;
     stop(): void;
@@ -105,4 +113,12 @@ export function isDamagable(object: any): object is DamagableI {
 
 export function isDamaging(object: any): object is DamagingI {
     return object.discriminator === 'Damaging';
+}
+
+export function isPhysical(object: any): object is PhysicalObject {
+    return object.physicalDiscriminator === 'Physical';
+}
+
+export function isDrawable(object: any): object is DrawableObject {
+    return object.drawableDiscriminator === 'Drawable';
 }

@@ -6,13 +6,15 @@ const enemy = new Image(900);
 enemy.src = './img/enemy.png';
 
 class Enemy implements DrawableI, DamagableI, ColidableI {
+    physicalDiscriminator: 'Physical' = 'Physical';
+    drawableDiscriminator: 'Drawable' = 'Drawable';
     discriminator: 'Damagable' = 'Damagable';
     hp = 100;
     sprite = new Sprite(enemy);
     z = -5;
     position: Position;
     get isRemoved(): boolean {
-        return this.hp > 0;
+        return this.hp == 0;
     }
 
     constructor(posittion: Position, map: GameMapI) {

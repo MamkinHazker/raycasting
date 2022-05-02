@@ -2,11 +2,11 @@ import { GameI } from './types.js';
 
 export function prepareDocument(canvas: HTMLCanvasElement, game: GameI) {
     let lock = false;
-
     document.addEventListener('keydown', (e) => {
         let key = e.key || e.keyCode;
         switch (key) {
         case 87:
+            debugger;
             game.player.movingForward = true;
             break;
         case 83:

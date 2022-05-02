@@ -6,12 +6,14 @@ const bullet = new Image();
 bullet.src = './img/bullet.png';
 
 export class Bullet implements DrawableI, DamagingI, ColidableI {
+    physicalDiscriminator: 'Physical' = 'Physical';
+    drawableDiscriminator: 'Drawable' = 'Drawable'
     discriminator: 'Damaging' = 'Damaging';
     sprite = new Sprite(bullet);
-    z = .47;
+    z = .4;
     damage: number;
     position: Position;
-    isColided = true;
+    isColided = false;
 
     get isRemoved(): boolean {
         return this.isColided;
@@ -19,15 +21,17 @@ export class Bullet implements DrawableI, DamagingI, ColidableI {
 
     constructor(damage: number, position: Position) {
         this.damage = damage;
-        position.x = position.x + Math.sin(position.angle) * .5;
-        position.y = position.y + Math.cos(position.angle) * .5;
-        this.position = position;
+        this.position = {
+            x: position.x + Math.sin(position.angle) * .5,
+            y: position.y + Math.cos(position.angle) * .5,
+            angle: position.angle
+        }
         setInterval(() => this.updatePosition(), 1);
     }
 
     updatePosition() {
-        this.position.x += Math.sin(this.position.angle) * .4;
-        this.position.y += Math.cos(this.position.angle) * .4;
+        this.position.x += Math.sin(this.position.angle) * .5;
+        this.position.y += Math.cos(this.position.angle) * .5;
     }
 
     dealDamage(to: DamagableI) {
@@ -40,7 +44,7 @@ export class Bullet implements DrawableI, DamagingI, ColidableI {
     }
 
     handleCollision(colidee: ColidableI): void {
-        if(isDamagable(colidee)) {
+        if (isDamagable(colidee)) {
             this.dealDamage(colidee);
         }
     }

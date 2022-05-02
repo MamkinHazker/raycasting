@@ -30,14 +30,13 @@ export class Renderer implements RendererI {
         this.drawRect(0, this.height / 2, this.height / 2, '#696969');
         const DepthBufer = [];
         for (let x = 0; x < this.resolution.x; x++) {
-            const rayAngle =
-                position.angle - this.FOV / 2 + (x / this.resolution.x) * this.FOV;
+            const rayAngle = position.angle - this.FOV / 2 + (x / this.resolution.x) * this.FOV;
             let distanceToTheWall = 0.0;
 
             const eyeX = Math.sin(rayAngle);
             const eyeY = Math.cos(rayAngle);
 
-            let textureStartPoint;
+            let textureStartPoint: number = 0;
 
             while (distanceToTheWall < this.depth) {
                 distanceToTheWall += 0.06;
@@ -48,19 +47,19 @@ export class Renderer implements RendererI {
                 const nTestY = Math.floor(testY);
                 if (this.map.value[nTestX][nTestY] == '#') {
                     const testAngle = Math.abs(Math.atan2(testY - (nTestY + 0.5), testX - (nTestX + 0.5)));
-                    const ceiling = this.height / 2 - this.height / distanceToTheWall;
-                    const floor = this.height - ceiling;
                     if (testAngle > Math.PI * 0.75 || testAngle < Math.PI * 0.25)
                         textureStartPoint = testY - nTestY;
                     else
                         textureStartPoint = testX - nTestX;
-                    this.drawTexture(x * this.pixelSize.x, ceiling, floor - ceiling, textureStartPoint, wall);
                     break;
                 } else if (nTestX < 0 || testX >= this.map.width || nTestY < 0 || testY >= this.map.height) {
                     distanceToTheWall = this.depth;
                     break;
                 }
             }
+            const ceiling = this.height / 2 - this.height / distanceToTheWall;
+            const floor = this.height - ceiling;
+            this.drawTexture(x * this.pixelSize.x, ceiling, floor - ceiling, textureStartPoint, wall);
             DepthBufer[x] = distanceToTheWall;
         }
 
@@ -72,20 +71,21 @@ export class Renderer implements RendererI {
             else if (angle > Math.PI) angle -= Math.PI * 2;
             const distance = Math.sqrt((posY - position.y) ** 2 + (posX - position.x) ** 2);
             if (Math.abs(angle) > this.FOV / 2 || distance > this.depth) continue;
-            const image = objects[i].sprite.sprite;
-            const objHeight = 2 * image.height / distance;
-            const objWidth = objHeight / image.height * image.width;
             const x = this.width * ((angle + this.FOV / 2) / this.FOV);
             if (DepthBufer[Math.round(x / this.pixelSize.x)] < distance) continue;
-            const z = (this.height / (this.height - objects[i].z + image.height)) * objects[i].z;
-            const y = this.height - (this.height / 2 - this.height / distance) - z / distance;
-            this.drawObject(objects[i].sprite, x - objWidth / 2, y - objHeight, objWidth, objHeight);
+            const image = objects[i].sprite.sprite;
+            const objHeight = 2 * image.height / distance;
+            const objWidth = 2 * image.width / distance;
+            const z = (2* this.height * objects[i].z) / distance;
+            const floor = this.height / 2 - this.height / distance;
+            const y = this.height - (floor + z);
+            this.drawObject(objects[i].sprite, x - objWidth / 2, y - objHeight / 2, objWidth, objHeight);
         }
     }
 
     drawGun(player: PlayerI): void {
         const sprite = player.gun?.sprite;
-        if(!sprite) return;
+        if (!sprite) return;
         const { isRunning, isMoving } = player;
         const ratio = (isRunning) ? 60 : 100;
         const bias = (isMoving) ? Math.cos(Date.now() / ratio) * (30 * (100 / ratio)) : 0;
@@ -147,7 +147,7 @@ export class Renderer implements RendererI {
     }
 
     drawTexture(x: number, y: number, height: number, startPos: number, texture: HTMLImageElement) {
-        this.ctx.drawImage(wall, wall.width * startPos, 0, this.pixelSize.x, wall.height, x, y, this.pixelSize.y, this.height);
+        this.ctx.drawImage(wall, wall.width * startPos, 0, this.pixelSize.x, wall.height, x, y, this.pixelSize.y, height);
     }
 
     drawObject(sprite: SpriteI, x: number, y: number, objWidth: number, objHeight: number) {

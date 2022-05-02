@@ -3,6 +3,7 @@ import { ColidableI, DamagableI, GameMapI, GunI, isDamaging, PlayerI, Position }
 let attackingTimer: NodeJS.Timer;
 
 export class Player implements DamagableI, ColidableI, PlayerI {
+    physicalDiscriminator: 'Physical' = 'Physical';
     discriminator: 'Damagable' = 'Damagable';
     hp = 100;
     movingForward = false;
@@ -14,7 +15,7 @@ export class Player implements DamagableI, ColidableI, PlayerI {
     gun: GunI | undefined;
 
     get isRemoved(): boolean {
-        return this.hp > 0;
+        return this.hp == 0;
     }
 
     constructor(position: Position, gun?: GunI) {
