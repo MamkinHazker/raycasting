@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon ./index.js",
-    "compile": "tsc",
+    "compile": "tsc && npx webpack --config webpack.config.js",
     "start": "node ./index.js",
     "start-comp": "tsc && node ./index.js",
     "eslint": "./node_modules/.bin/eslint 'src/**/*.ts'",
