@@ -86,8 +86,8 @@ export class Renderer implements RendererI {
     drawGun(player: PlayerI): void {
         const sprite = player.gun?.sprite;
         if (!sprite) return;
-        const { isRunning, isMoving } = player;
-        const ratio = (isRunning) ? 60 : 100;
+        const { isRunning, movingForward, isMoving } = player;
+        const ratio = (isRunning && movingForward) ? 60 : 100;
         const bias = (isMoving) ? Math.cos(Date.now() / ratio) * (30 * (100 / ratio)) : 0;
         const { sx, sy, sWidth, sHeight } = sprite.getFrame();
         let gunSize = this.width / 4;

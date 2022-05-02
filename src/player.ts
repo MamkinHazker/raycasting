@@ -34,9 +34,10 @@ export class Player implements DamagableI, ColidableI, PlayerI {
     }
 
     updatePosition(map: GameMapI) {
-        let speed = .1;
-        if (this.isRunning) speed *= 1.3;
+        let speed = .06;
+        if((this.movingForward || this.movingBack) && (this.movingLeft || this.movingRight)) speed *= .707106;
         if (this.movingForward) {
+            if (this.isRunning) speed *= 1.7;
             this.position.x += Math.sin(this.position.angle) * speed;
             this.position.y += Math.cos(this.position.angle) * speed;
             if (map.value[Math.floor(this.position.x)][Math.floor(this.position.y)] == '#') {
