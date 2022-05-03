@@ -34,11 +34,9 @@ export class Renderer implements RendererI {
             const ray = this.castRay(position, rayAngle);
             const { hitTheWall, distanceToTheWall, textureStartPoint } = ray;
             if (!hitTheWall) continue;
-            if (distanceToTheWall > 5) console.log('>5');
             const ceiling = this.height / 2 - this.height / distanceToTheWall;
             const floor = this.height - ceiling;
-            //this.drawTexture(x * this.pixelSize.x, ceiling, floor - ceiling, textureStartPoint, wall);
-            this.drawRect(x * this.pixelSize.x, ceiling, this.pixelSize.x, floor - ceiling, '#2F4F4F');
+            this.drawTexture(x * this.pixelSize.x, ceiling, floor - ceiling, textureStartPoint, wall);
             DepthBufer[x] = distanceToTheWall;
         }
 
@@ -70,7 +68,7 @@ export class Renderer implements RendererI {
             x: Math.sqrt(1 + (Math.cos(rayAngle) / Math.sin(rayAngle)) ** 2),
             y: Math.sqrt(1 + (Math.sin(rayAngle) / Math.cos(rayAngle)) ** 2)
         };
-        const absoluteCoords = { x: position.x, y: position.y };
+        const absoluteCoords = { x: Math.floor(position.x), y: Math.floor(position.y) };
         const rayLength = {
             x: (absoluteCoords.x + 1 - position.x) * unitStep.x,
             y: (absoluteCoords.y + 1 - position.y) * unitStep.y,
@@ -103,7 +101,7 @@ export class Renderer implements RendererI {
             if (absoluteCoords.x < 0 || absoluteCoords.x >= this.map.width || absoluteCoords.y < 0 || absoluteCoords.y >= this.map.height) {
                 return { hitTheWall, distanceToTheWall: this.depth, textureStartPoint };
             }
-            else if (this.map.value[Math.round(absoluteCoords.x)][Math.round(absoluteCoords.y)] == '#') {
+            else if (this.map.value[absoluteCoords.x][absoluteCoords.y] == '#') {
                 hitTheWall = true;
                 break;
             }
