@@ -14,8 +14,8 @@ canvas.height = document.body.clientHeight;
 const width = canvas.width;
 const height = canvas.height;
 
-const resolutionX = 800;
-const resolutionY = height * (800 / width);
+const resolutionX = width / 2;
+const resolutionY = height * (resolutionX / width);
 
 const resolution = { x: resolutionX, y: resolutionY };
 const pixelSize: PixelSize = { x: width / resolutionX, y: height / resolutionY };
@@ -45,7 +45,7 @@ const map: GameMap = new GameMap(
 );
 
 const player = new Player({ x: 2, y: 2, angle: 0 });
-const renderer = new Renderer(map, ctx, resolution, pixelSize, Math.PI * (104/360));
+const renderer = new Renderer(map, ctx, resolution, pixelSize, Math.PI * (120/360));
 const game = new Game(map, player, renderer);
 
 prepareDocument(canvas, game);

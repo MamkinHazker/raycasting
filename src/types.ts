@@ -92,7 +92,6 @@ export interface RendererI {
     drawFrame(position: Position, objects: DrawableI[]): void;
     drawGun(player: PlayerI): void;
     drawUI(position: Position, hpLevel: number): void;
-    drawRect(x: number, y: number, height: number, color: string): void;
     drawTexture(x: number, y: number, height: number, startPos: number, texture: HTMLImageElement): void;
     drawObject(sprite: Sprite, x: number, y: number, objWidth: number, objHeight: number): void;
 }

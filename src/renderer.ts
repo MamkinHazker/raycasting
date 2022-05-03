@@ -26,40 +26,19 @@ export class Renderer implements RendererI {
     }
 
     drawFrame(position: Position, objects: DrawableObjectManagerI): void {
-        this.drawRect(0, 0, this.height / 2, '#A9A9A9');
-        this.drawRect(0, this.height / 2, this.height / 2, '#696969');
+        this.drawRect(0, 0, this.width, this.height / 2, '#A9A9A9');
+        this.drawRect(0, this.height / 2, this.width, this.height / 2, '#696969');
         const DepthBufer = [];
         for (let x = 0; x < this.resolution.x; x++) {
             const rayAngle = position.angle - this.FOV / 2 + (x / this.resolution.x) * this.FOV;
-            let distanceToTheWall = 0.0;
-
-            const eyeX = Math.sin(rayAngle);
-            const eyeY = Math.cos(rayAngle);
-
-            let textureStartPoint: number = 0;
-
-            while (distanceToTheWall < this.depth) {
-                distanceToTheWall += 0.06;
-
-                const testX = position.x + eyeX * distanceToTheWall;
-                const testY = position.y + eyeY * distanceToTheWall;
-                const nTestX = Math.floor(testX);
-                const nTestY = Math.floor(testY);
-                if (this.map.value[nTestX][nTestY] == '#') {
-                    const testAngle = Math.abs(Math.atan2(testY - (nTestY + 0.5), testX - (nTestX + 0.5)));
-                    if (testAngle > Math.PI * 0.75 || testAngle < Math.PI * 0.25)
-                        textureStartPoint = testY - nTestY;
-                    else
-                        textureStartPoint = testX - nTestX;
-                    break;
-                } else if (nTestX < 0 || testX >= this.map.width || nTestY < 0 || testY >= this.map.height) {
-                    distanceToTheWall = this.depth;
-                    break;
-                }
-            }
+            const ray = this.castRay(position, rayAngle);
+            const { hitTheWall, distanceToTheWall, textureStartPoint } = ray;
+            if (!hitTheWall) continue;
+            if (distanceToTheWall > 5) console.log('>5');
             const ceiling = this.height / 2 - this.height / distanceToTheWall;
             const floor = this.height - ceiling;
-            this.drawTexture(x * this.pixelSize.x, ceiling, floor - ceiling, textureStartPoint, wall);
+            //this.drawTexture(x * this.pixelSize.x, ceiling, floor - ceiling, textureStartPoint, wall);
+            this.drawRect(x * this.pixelSize.x, ceiling, this.pixelSize.x, floor - ceiling, '#2F4F4F');
             DepthBufer[x] = distanceToTheWall;
         }
 
@@ -76,11 +55,60 @@ export class Renderer implements RendererI {
             const image = objects[i].sprite.sprite;
             const objHeight = 2 * image.height / distance;
             const objWidth = 2 * image.width / distance;
-            const z = (2* this.height * objects[i].z) / distance;
+            const z = (2 * this.height * objects[i].z) / distance;
             const floor = this.height / 2 - this.height / distance;
             const y = this.height - (floor + z);
             this.drawObject(objects[i].sprite, x - objWidth / 2, y - objHeight / 2, objWidth, objHeight);
         }
+    }
+
+    castRay(position: Position, rayAngle: number): { hitTheWall: boolean, distanceToTheWall: number, textureStartPoint: number } {
+        if (rayAngle < -Math.PI) rayAngle += Math.PI * 2;
+        else if (rayAngle > Math.PI) rayAngle -= Math.PI * 2;
+
+        const unitStep = {
+            x: Math.sqrt(1 + (Math.cos(rayAngle) / Math.sin(rayAngle)) ** 2),
+            y: Math.sqrt(1 + (Math.sin(rayAngle) / Math.cos(rayAngle)) ** 2)
+        };
+        const absoluteCoords = { x: position.x, y: position.y };
+        const rayLength = {
+            x: (absoluteCoords.x + 1 - position.x) * unitStep.x,
+            y: (absoluteCoords.y + 1 - position.y) * unitStep.y,
+        };
+
+        const step = { x: 1, y: 1 };
+        if (rayAngle < 0) {
+            step.x = -1;
+            rayLength.x = (position.x - absoluteCoords.x) * unitStep.x;
+        }
+        if (Math.abs(rayAngle) > Math.PI / 2) {
+            step.y = -1;
+            rayLength.y = (position.y - absoluteCoords.y) * unitStep.y;
+        }
+
+
+        let textureStartPoint = 0;
+        let distanceToTheWall = 0;
+        let hitTheWall = false;
+        while (!hitTheWall && distanceToTheWall < this.depth) {
+            if (rayLength.x < rayLength.y) {
+                absoluteCoords.x += step.x;
+                distanceToTheWall = rayLength.x;
+                rayLength.x += unitStep.x;
+            } else {
+                absoluteCoords.y += step.y;
+                distanceToTheWall = rayLength.y;
+                rayLength.y += unitStep.y;
+            }
+            if (absoluteCoords.x < 0 || absoluteCoords.x >= this.map.width || absoluteCoords.y < 0 || absoluteCoords.y >= this.map.height) {
+                return { hitTheWall, distanceToTheWall: this.depth, textureStartPoint };
+            }
+            else if (this.map.value[Math.round(absoluteCoords.x)][Math.round(absoluteCoords.y)] == '#') {
+                hitTheWall = true;
+                break;
+            }
+        }
+        return { hitTheWall, distanceToTheWall, textureStartPoint };
     }
 
     drawGun(player: PlayerI): void {
@@ -97,7 +125,6 @@ export class Renderer implements RendererI {
     drawUI(position: Position, hpLevel: number): void {
         this.drawHpBar(hpLevel);
         this.drawMap(position);
-
     }
 
     drawHpBar(hpLevel: number): void {
@@ -141,9 +168,9 @@ export class Renderer implements RendererI {
         this.ctx.fillRect(x - 5, y - 5, 10, 10);
     }
 
-    drawRect(x: number, y: number, height: number, color: string): void {
+    drawRect(x: number, y: number, width: number, height: number, color: string): void {
         this.ctx.fillStyle = color;
-        this.ctx.fillRect(x, y, this.width, this.height);
+        this.ctx.fillRect(x, y, width, height);
     }
 
     drawTexture(x: number, y: number, height: number, startPos: number, texture: HTMLImageElement) {
