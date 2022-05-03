@@ -68,20 +68,20 @@ export class Renderer implements RendererI {
             x: Math.sqrt(1 + (Math.cos(rayAngle) / Math.sin(rayAngle)) ** 2),
             y: Math.sqrt(1 + (Math.sin(rayAngle) / Math.cos(rayAngle)) ** 2)
         };
-        const absoluteCoords = { x: Math.floor(position.x), y: Math.floor(position.y) };
+        const mapCheck = { x: Math.floor(position.x), y: Math.floor(position.y) };
         const rayLength = {
-            x: (absoluteCoords.x + 1 - position.x) * unitStep.x,
-            y: (absoluteCoords.y + 1 - position.y) * unitStep.y,
+            x: (mapCheck.x + 1 - position.x) * unitStep.x,
+            y: (mapCheck.y + 1 - position.y) * unitStep.y,
         };
 
         const step = { x: 1, y: 1 };
         if (rayAngle < 0) {
             step.x = -1;
-            rayLength.x = (position.x - absoluteCoords.x) * unitStep.x;
+            rayLength.x = (position.x - mapCheck.x) * unitStep.x;
         }
         if (Math.abs(rayAngle) > Math.PI / 2) {
             step.y = -1;
-            rayLength.y = (position.y - absoluteCoords.y) * unitStep.y;
+            rayLength.y = (position.y - mapCheck.y) * unitStep.y;
         }
 
 
@@ -90,18 +90,18 @@ export class Renderer implements RendererI {
         let hitTheWall = false;
         while (!hitTheWall && distanceToTheWall < this.depth) {
             if (rayLength.x < rayLength.y) {
-                absoluteCoords.x += step.x;
+                mapCheck.x += step.x;
                 distanceToTheWall = rayLength.x;
                 rayLength.x += unitStep.x;
             } else {
-                absoluteCoords.y += step.y;
+                mapCheck.y += step.y;
                 distanceToTheWall = rayLength.y;
                 rayLength.y += unitStep.y;
             }
-            if (absoluteCoords.x < 0 || absoluteCoords.x >= this.map.width || absoluteCoords.y < 0 || absoluteCoords.y >= this.map.height) {
+            if (mapCheck.x < 0 || mapCheck.x >= this.map.width || mapCheck.y < 0 || mapCheck.y >= this.map.height) {
                 return { hitTheWall, distanceToTheWall: this.depth, textureStartPoint };
             }
-            else if (this.map.value[absoluteCoords.x][absoluteCoords.y] == '#') {
+            else if (this.map.value[mapCheck.x][mapCheck.y] == '#') {
                 hitTheWall = true;
                 break;
             }
