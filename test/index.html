@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        canvas.height = 500;
+        canvas.width = 500;
+
+        const ctx = canvas.getContext('2d');
+
+        const map = [
+            '..........',
+            '#.........',
+            '..........',
+            '.....#....',
+            '..........',
+            '..........',
+            '...#......',
+            '.......#..',
+            '..........',
+            '..........'
+        ]
+        Array.prototype.width = map.length;
+        Array.prototype.height = map[0]?.length;
+
+        const boxSize = {
+            x: 500 / map.length,
+            y: 500 / map[0].length
+        }
+
+        fillRect = function(x, y, w, h) {
+            ctx.fillRect(x * boxSize.x, y * boxSize.y, w * boxSize.x, h * boxSize.y)
+        }
+        moveTo = function(x, y) {
+            ctx.moveTo(x * boxSize.x, y * boxSize.y)
+        }
+        lineTo = function(x, y) {
+            ctx.lineTo(x * boxSize.x, y * boxSize.y)
+        }
+
+        for (let x = 0; x < map.length; x++) {
+            for (let y = 0; y < map[0].length; y++) {
+                if (map[x][y] == '#') fillRect(x, y, 1, 1);
+            }
+        }
+
+        let playerx = 5;
+        let playery = 5;
+        ctx.fillStyle = 'red';
+        fillRect(playerx -.05, playery -.05, .1, .1);
+        ctx.fillStyle = 'black';
+        let playerangle = 0;
+        let depth = 20;
+        canvas.addEventListener('click', (e) => {
+            let clickX = e.offsetX / boxSize.x;
+            let clickY = e.offsetY / boxSize.y;
+            playerangle = -Math.atan2(playerx - clickX, playery - clickY);
+
+            const unitStep = { x: Math.sqrt(1 + (Math.cos(playerangle) / Math.sin(playerangle)) ** 2), y: Math.sqrt(1 + (Math.sin(playerangle) / Math.cos(playerangle)) ** 2) };
+            const mapCheck = { x: Math.floor(playerx), y: Math.floor(playery) };
+            const rayLength = { x: (mapCheck.x + 1 - playerx) * unitStep.x, y: (mapCheck.y + 1 - playery) * unitStep.y };
+            const step = { x: 1, y: 1 };
+            if (playerangle < 0) {
+                step.x = -1;
+                rayLength.x = (playerx - mapCheck.x) * unitStep.x;
+            }
+            if (Math.abs(playerangle) < Math.PI / 2) {
+                step.y = -1;
+                rayLength.y = (playery - mapCheck.y) * unitStep.y;
+            }
+
+
+            let textureStartPoint = 0;
+            let distanceToTheWall = 0;
+            let hitTheWall = false;
+            let side = 0;
+            while (!hitTheWall && distanceToTheWall < depth) {
+                if (rayLength.x < rayLength.y) {
+                    mapCheck.x += step.x;
+                    distanceToTheWall = rayLength.x;
+                    rayLength.x += unitStep.x;
+                    side = 0;
+                } else {
+                    mapCheck.y += step.y;
+                    distanceToTheWall = rayLength.y;
+                    rayLength.y += unitStep.y;
+                    side = 1;
+                }
+                if (mapCheck.x < 0 || mapCheck.x >= map.width || mapCheck.y < 0 || mapCheck.y >= map.height) {
+                    return { hitTheWall, distanceToTheWall: depth, textureStartPoint };
+                }
+                else if (map[mapCheck.x][mapCheck.y] == '#') {
+                    hitTheWall = true;
+                    break;
+                }
+            }
+
+            hitX = playerx + Math.sin(playerangle) * distanceToTheWall;
+            hitY = playery + -Math.cos(playerangle) * distanceToTheWall;
+
+            console.log(hitX % 1, hitY % 1, side)
+
+            ctx.beginPath();
+            moveTo(playerx, playery);
+            lineTo(hitX, hitY);
+            ctx.stroke();
+            ctx.fillStyle = 'green';
+            fillRect(hitX -.05, hitY -.05, .1, .1)
+        });
+
+    </script>
+</body>
+
+</html>

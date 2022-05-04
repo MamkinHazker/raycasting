@@ -32,7 +32,7 @@ export class Renderer implements RendererI {
         for (let x = 0; x < this.resolution.x; x++) {
             const rayAngle = position.angle - this.FOV / 2 + (x / this.resolution.x) * this.FOV;
             const ray = this.castRay(position, rayAngle);
-            const { hitTheWall, distanceToTheWall, textureStartPoint } = ray;
+            let { hitTheWall, distanceToTheWall, textureStartPoint } = ray;
             if (!hitTheWall) continue;
             const ceiling = this.height / 2 - this.height / distanceToTheWall;
             const floor = this.height - ceiling;
@@ -61,19 +61,12 @@ export class Renderer implements RendererI {
     }
 
     castRay(position: Position, rayAngle: number): { hitTheWall: boolean, distanceToTheWall: number, textureStartPoint: number } {
-        if (rayAngle < -Math.PI) rayAngle += Math.PI * 2;
-        else if (rayAngle > Math.PI) rayAngle -= Math.PI * 2;
+        if (rayAngle < -Math.PI) rayAngle += Math.PI * 2;       // Normalizing  
+        else if (rayAngle > Math.PI) rayAngle -= Math.PI * 2;   // angle
 
-        const unitStep = {
-            x: Math.sqrt(1 + (Math.cos(rayAngle) / Math.sin(rayAngle)) ** 2),
-            y: Math.sqrt(1 + (Math.sin(rayAngle) / Math.cos(rayAngle)) ** 2)
-        };
+        const unitStep = { x: Math.sqrt(1 + (Math.cos(rayAngle) / Math.sin(rayAngle)) ** 2), y: Math.sqrt(1 + (Math.sin(rayAngle) / Math.cos(rayAngle)) ** 2) };
         const mapCheck = { x: Math.floor(position.x), y: Math.floor(position.y) };
-        const rayLength = {
-            x: (mapCheck.x + 1 - position.x) * unitStep.x,
-            y: (mapCheck.y + 1 - position.y) * unitStep.y,
-        };
-
+        const rayLength = { x: (mapCheck.x + 1 - position.x) * unitStep.x, y: (mapCheck.y + 1 - position.y) * unitStep.y };
         const step = { x: 1, y: 1 };
         if (rayAngle < 0) {
             step.x = -1;
@@ -84,19 +77,21 @@ export class Renderer implements RendererI {
             rayLength.y = (position.y - mapCheck.y) * unitStep.y;
         }
 
-
         let textureStartPoint = 0;
         let distanceToTheWall = 0;
         let hitTheWall = false;
+        let side = 0;
         while (!hitTheWall && distanceToTheWall < this.depth) {
             if (rayLength.x < rayLength.y) {
                 mapCheck.x += step.x;
                 distanceToTheWall = rayLength.x;
                 rayLength.x += unitStep.x;
+                side = 0;
             } else {
                 mapCheck.y += step.y;
                 distanceToTheWall = rayLength.y;
                 rayLength.y += unitStep.y;
+                side = 1;
             }
             if (mapCheck.x < 0 || mapCheck.x >= this.map.width || mapCheck.y < 0 || mapCheck.y >= this.map.height) {
                 return { hitTheWall, distanceToTheWall: this.depth, textureStartPoint };
@@ -106,7 +101,12 @@ export class Renderer implements RendererI {
                 break;
             }
         }
-        return { hitTheWall, distanceToTheWall, textureStartPoint };
+        
+        if (side == 1) textureStartPoint = (mapCheck.y + Math.sin(rayAngle) * distanceToTheWall) % 1;
+        else if (side == 0) textureStartPoint = (mapCheck.x - Math.cos(rayAngle) * distanceToTheWall) % 1;
+
+        distanceToTheWall = Math.cos(rayAngle - position.angle) * distanceToTheWall;
+        return { hitTheWall, distanceToTheWall, textureStartPoint: Math.abs(textureStartPoint) };
     }
 
     drawGun(player: PlayerI): void {
