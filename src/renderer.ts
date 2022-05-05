@@ -64,15 +64,19 @@ export class Renderer implements RendererI {
         if (rayAngle < -Math.PI) rayAngle += Math.PI * 2;       // Normalizing  
         else if (rayAngle > Math.PI) rayAngle -= Math.PI * 2;   // angle
 
-        const unitStep = { x: Math.sqrt(1 + (Math.cos(rayAngle) / Math.sin(rayAngle)) ** 2), y: Math.sqrt(1 + (Math.sin(rayAngle) / Math.cos(rayAngle)) ** 2) };
+        const rayDirection = {
+            x: Math.sin(rayAngle),
+            y: -Math.cos(rayAngle)
+        }
+        const unitStep = { x: Math.sqrt(1 + (rayDirection.y / rayDirection.x) ** 2), y: Math.sqrt(1 + (rayDirection.x / rayDirection.y) ** 2) };
         const mapCheck = { x: Math.floor(position.x), y: Math.floor(position.y) };
         const rayLength = { x: (mapCheck.x + 1 - position.x) * unitStep.x, y: (mapCheck.y + 1 - position.y) * unitStep.y };
         const step = { x: 1, y: 1 };
-        if (rayAngle < 0) {
+        if (rayDirection.x < 0) {
             step.x = -1;
             rayLength.x = (position.x - mapCheck.x) * unitStep.x;
         }
-        if (Math.abs(rayAngle) > Math.PI / 2) {
+        if (rayDirection.y > 0) {
             step.y = -1;
             rayLength.y = (position.y - mapCheck.y) * unitStep.y;
         }
@@ -87,7 +91,7 @@ export class Renderer implements RendererI {
                 distanceToTheWall = rayLength.x;
                 rayLength.x += unitStep.x;
                 side = 0;
-            } else {
+            } else if (rayLength.y < rayLength.x) {
                 mapCheck.y += step.y;
                 distanceToTheWall = rayLength.y;
                 rayLength.y += unitStep.y;
@@ -101,12 +105,16 @@ export class Renderer implements RendererI {
                 break;
             }
         }
-        
-        if (side == 1) textureStartPoint = (mapCheck.y + Math.sin(rayAngle) * distanceToTheWall) % 1;
-        else if (side == 0) textureStartPoint = (mapCheck.x - Math.cos(rayAngle) * distanceToTheWall) % 1;
-
+        const hit = {
+            x: (position.x + rayDirection.x * distanceToTheWall),
+            y: (position.y - rayDirection.y * distanceToTheWall)
+        }
+        if (side == 1) textureStartPoint = hit.x - Math.floor(hit.x);
+        else textureStartPoint = hit.y - Math.floor(hit.y);
+        if(1 - textureStartPoint < .005) textureStartPoint = .99;
+        if(textureStartPoint < .005) textureStartPoint = .01
         distanceToTheWall = Math.cos(rayAngle - position.angle) * distanceToTheWall;
-        return { hitTheWall, distanceToTheWall, textureStartPoint: Math.abs(textureStartPoint) };
+        return { hitTheWall, distanceToTheWall, textureStartPoint: textureStartPoint };
     }
 
     drawGun(player: PlayerI): void {
