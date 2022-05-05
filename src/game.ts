@@ -17,7 +17,7 @@ export class Game implements GameI {
     }
 
     handleCollisions(): void {
-        if(this.objectManager.physicalObjects.length < 2) return;
+        if (this.objectManager.physicalObjects.length < 2) return;
         for (let i = 0; i < this.objectManager.physicalObjects.length; i++) {
             for (let j = i + 1; i < this.objectManager.physicalObjects.length; j++) {
                 const colider = this.objectManager.physicalObjects[i];
@@ -37,18 +37,14 @@ export class Game implements GameI {
     }
 
     start(): void {
-        let slowFrames = 0;
-        let fastFrames = 0;
         let frameRate = document.getElementById('fps')!;
         gametimer = setInterval(async () => {
             const renderingStart = new Date();
             this.renderer.drawFrame(this.player.position, this.objectManager.drawableObjects);
             this.renderer.drawGun(this.player);
             this.renderer.drawUI(this.player.position, this.player.hp);
-            let fps = Number((new Date()).getTime()- renderingStart.getTime());
-            if(fps > 17) slowFrames = (slowFrames + 1) % 1000;
-            else fastFrames = (fastFrames + 1) % 1000;
-            frameRate.innerHTML = String(slowFrames / fastFrames);
+            let fps = 1000/Number((new Date()).getTime() - renderingStart.getTime());
+            frameRate.innerHTML = String(fps);
             this.player.updatePosition(this.map);
             this.handleCollisions();
             if (this.player.isRemoved) {
