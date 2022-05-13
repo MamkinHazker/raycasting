@@ -37,14 +37,11 @@ export class Game implements GameI {
     }
 
     start(): void {
-        let frameRate = document.getElementById('fps')!;
         gametimer = setInterval(async () => {
             const renderingStart = new Date();
             this.renderer.drawFrame(this.player.position, this.objectManager.drawableObjects);
             this.renderer.drawGun(this.player);
             this.renderer.drawUI(this.player.position, this.player.hp);
-            let fps = 1000/Number((new Date()).getTime() - renderingStart.getTime());
-            frameRate.innerHTML = String(fps);
             this.player.updatePosition(this.map);
             this.handleCollisions();
             if (this.player.isRemoved) {
