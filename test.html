@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <canvas id="Canvas"></canvas>
+        <script>
+            const canvas = document.getElementById('Canvas');
+            const ctx = canvas.getContext('2d');
+
+            const { clientWidth, clientHeight } = document.body;
+            canvas.width = clientWidth / 4;
+            canvas.height = clientHeight / 4;
+
+            ctx.scale(4, 4);
+
+            canvas.style.width = `${clientWidth}px`;
+            canvas.style.height = `${clientHeight}px`;
+
+            ctx.fillRect(0, 0, 20, 20);
+        </script>
+        <style>
+            body, html {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </body>
+</html>

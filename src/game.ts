@@ -38,7 +38,6 @@ export class Game implements GameI {
 
     start(): void {
         gametimer = setInterval(async () => {
-            const renderingStart = new Date();
             this.renderer.drawFrame(this.player.position, this.objectManager.drawableObjects);
             this.renderer.drawGun(this.player);
             this.renderer.drawUI(this.player.position, this.player.hp);

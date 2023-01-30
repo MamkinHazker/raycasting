@@ -1,9 +1,5 @@
 import { AnimatedSprite, Sprite } from './sprite.js';
 
-export type PixelSize = {
-    x: number,
-    y: number
-};
 
 export type Position = {
     x: number,
@@ -86,7 +82,6 @@ export interface RendererI {
     map: GameMapI;
     ctx: CanvasRenderingContext2D;
     resolution: { x: number, y: number };
-    pixelSize: PixelSize;
     FOV: number;
     depth: number;
     drawFrame(position: Position, objects: DrawableI[]): void;

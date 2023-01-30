@@ -1,6 +1,4 @@
-import { AnimatedSprite } from './sprite.js';
-import { PlayerI, SpriteI } from './types.js';
-import { Position, RendererI, GameMapI, PixelSize, DrawableObjectManagerI } from './types.js';
+import { DrawableObjectManagerI, GameMapI, PlayerI, Position, RendererI, SpriteI } from './types.js';
 
 const wall = new Image();
 wall.src = './img/wall.jpg';
@@ -9,20 +7,24 @@ export class Renderer implements RendererI {
     map: GameMapI;
     ctx: CanvasRenderingContext2D;
     resolution: { x: number; y: number };
-    pixelSize: PixelSize;
     height: number;
     width: number;
     FOV: number;
     depth = 16;
+    hpBar: { width: number; height: number; offset: number };
 
-    constructor(map: GameMapI, ctx: CanvasRenderingContext2D, resolution: { x: number; y: number }, pixelSize: PixelSize, FOV: number) {
+    constructor(map: GameMapI, ctx: CanvasRenderingContext2D, resolution: { x: number; y: number }, FOV: number) {
         this.map = map;
         this.ctx = ctx;
         this.resolution = resolution;
-        this.pixelSize = pixelSize;
         this.height = this.ctx.canvas.height;
         this.width = this.ctx.canvas.width;
         this.FOV = FOV;
+        this.hpBar = {
+            width: this.width / 4,
+            height: 10,
+            offset: 10,
+        };
     }
 
     drawFrame(position: Position, objects: DrawableObjectManagerI): void {
@@ -36,7 +38,7 @@ export class Renderer implements RendererI {
             if (!hitTheWall) continue;
             const ceiling = this.height / 2 - this.height / distanceToTheWall;
             const floor = this.height - ceiling;
-            this.drawTexture(x * this.pixelSize.x, ceiling, floor - ceiling, textureStartPoint, wall);
+            this.drawTexture(x, ceiling, floor - ceiling, textureStartPoint, wall);
             DepthBufer[x] = distanceToTheWall;
         }
 
@@ -49,10 +51,10 @@ export class Renderer implements RendererI {
             const distance = Math.sqrt((posY - position.y) ** 2 + (posX - position.x) ** 2);
             if (Math.abs(angle) > this.FOV / 2 || distance > this.depth) continue;
             const x = this.width * ((angle + this.FOV / 2) / this.FOV);
-            if (DepthBufer[Math.round(x / this.pixelSize.x)] < distance) continue;
+            if (DepthBufer[Math.round(x)] < distance) continue;
             const image = objects[i].sprite.sprite;
-            const objHeight = 2 * image.height / distance;
-            const objWidth = 2 * image.width / distance;
+            const objHeight = (2 * image.height) / distance;
+            const objWidth = (2 * image.width) / distance;
             const z = (2 * this.height * objects[i].z) / distance;
             const floor = this.height / 2 - this.height / distance;
             const y = this.height - (floor + z);
@@ -60,14 +62,11 @@ export class Renderer implements RendererI {
         }
     }
 
-    castRay(position: Position, rayAngle: number): { hitTheWall: boolean, distanceToTheWall: number, textureStartPoint: number } {
-        if (rayAngle < -Math.PI) rayAngle += Math.PI * 2;       // Normalizing  
-        else if (rayAngle > Math.PI) rayAngle -= Math.PI * 2;   // angle
-
+    castRay(position: Position, rayAngle: number): { hitTheWall: boolean; distanceToTheWall: number; textureStartPoint: number } {
         const rayDirection = {
             x: Math.sin(rayAngle),
-            y: -Math.cos(rayAngle)
-        }
+            y: -Math.cos(rayAngle),
+        };
         const unitStep = { x: Math.sqrt(1 + (rayDirection.y / rayDirection.x) ** 2), y: Math.sqrt(1 + (rayDirection.x / rayDirection.y) ** 2) };
         const mapCheck = { x: Math.floor(position.x), y: Math.floor(position.y) };
         const rayLength = { x: (mapCheck.x + 1 - position.x) * unitStep.x, y: (mapCheck.y + 1 - position.y) * unitStep.y };
@@ -99,20 +98,19 @@ export class Renderer implements RendererI {
             }
             if (mapCheck.x < 0 || mapCheck.x >= this.map.width || mapCheck.y < 0 || mapCheck.y >= this.map.height) {
                 return { hitTheWall, distanceToTheWall: this.depth, textureStartPoint };
-            }
-            else if (this.map.value[mapCheck.x][mapCheck.y] == '#') {
+            } else if (this.map.value[mapCheck.x][mapCheck.y] == '#') {
                 hitTheWall = true;
                 break;
             }
         }
         const hit = {
-            x: (position.x + rayDirection.x * distanceToTheWall),
-            y: (position.y - rayDirection.y * distanceToTheWall)
-        }
+            x: position.x + rayDirection.x * distanceToTheWall,
+            y: position.y - rayDirection.y * distanceToTheWall,
+        };
         if (side == 1) textureStartPoint = hit.x - Math.floor(hit.x);
         else textureStartPoint = hit.y - Math.floor(hit.y);
-        if(1 - textureStartPoint < .005) textureStartPoint = .99;
-        if(textureStartPoint < .005) textureStartPoint = .01
+        if (1 - textureStartPoint < 0.005) textureStartPoint = 0.99;
+        if (textureStartPoint < 0.005) textureStartPoint = 0.01;
         distanceToTheWall = Math.cos(rayAngle - position.angle) * distanceToTheWall;
         return { hitTheWall, distanceToTheWall, textureStartPoint: textureStartPoint };
     }
@@ -121,8 +119,8 @@ export class Renderer implements RendererI {
         const sprite = player.gun?.sprite;
         if (!sprite) return;
         const { isRunning, movingForward, isMoving } = player;
-        const ratio = (isRunning && movingForward) ? 60 : 100;
-        const bias = (isMoving) ? Math.cos(Date.now() / ratio) * (30 * (100 / ratio)) : 0;
+        const ratio = isRunning && movingForward ? 60 : 100;
+        const bias = isMoving ? Math.cos(Date.now() / ratio) * (30 * (100 / ratio)) : 0;
         const { sx, sy, sWidth, sHeight } = sprite.getFrame();
         let gunSize = this.width / 4;
         this.ctx.drawImage(sprite.sprite, sx, sy, sWidth, sHeight, this.width / 2 - gunSize / 2 + bias, this.height - gunSize, gunSize, gunSize);
@@ -136,21 +134,20 @@ export class Renderer implements RendererI {
     drawHpBar(hpLevel: number): void {
         this.ctx.strokeStyle = 'black';
         this.ctx.lineWidth = 2;
-        this.ctx.strokeRect(this.width - 321, 19, 302, 22);
+        this.ctx.strokeRect(this.width - this.hpBar.offset - this.hpBar.width - 1, this.hpBar.offset - 1, this.hpBar.width + 2, this.hpBar.height + 2);
         this.ctx.lineWidth = 1;
         this.ctx.fillStyle = 'red';
-        this.ctx.fillRect(this.width - 320, 20, hpLevel / 100 * 300, 20);
+        this.ctx.fillRect(this.width - this.hpBar.offset - this.hpBar.width, this.hpBar.offset, (hpLevel / 100) * this.hpBar.width, this.hpBar.height);
     }
 
     drawMap(position: Position): void {
-        const mapLessSide = (this.map.height < this.map.width) ? this.map.height : this.map.width;
+        const mapLessSide = this.map.height < this.map.width ? this.map.height : this.map.width;
         const mapSize = this.height / 4;
         const pixel = mapSize / mapLessSide;
         this.ctx.fillStyle = '#FFF';
         for (let i = 0; i < this.map.width; i++) {
             for (let j = 0; j < this.map.height; j++) {
-                if (this.map.value[i][j] == '#')
-                    this.ctx.fillRect(mapSize - i * pixel + 15, j * pixel, pixel, pixel);
+                if (this.map.value[i][j] == '#') this.ctx.fillRect(mapSize - i * pixel + 15, j * pixel, pixel, pixel);
             }
         }
         this.drawPlayer(mapSize, position, pixel);
@@ -175,12 +172,14 @@ export class Renderer implements RendererI {
     }
 
     drawRect(x: number, y: number, width: number, height: number, color: string): void {
+        (x = Math.round(x)), (y = Math.round(y)), (width = Math.round(width)), (height = Math.round(height));
         this.ctx.fillStyle = color;
         this.ctx.fillRect(x, y, width, height);
     }
 
     drawTexture(x: number, y: number, height: number, startPos: number, texture: HTMLImageElement) {
-        this.ctx.drawImage(wall, wall.width * startPos, 0, this.pixelSize.x, wall.height, x, y, this.pixelSize.y, height);
+        (x = Math.round(x)), (y = Math.round(y)), (height = Math.round(height));
+        this.ctx.drawImage(wall, Math.round(wall.width * startPos), 0, 1, wall.height, x, y, 1, height);
     }
 
     drawObject(sprite: SpriteI, x: number, y: number, objWidth: number, objHeight: number) {

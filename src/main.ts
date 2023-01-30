@@ -4,48 +4,44 @@ import { GameMap } from './map.js';
 import { Player } from './player.js';
 import { prepareDocument } from './prepare.js';
 import { Renderer } from './renderer.js';
-import { PixelSize } from './types.js';
 
-const canvas = (document.getElementById('canvas') as HTMLCanvasElement);
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 
-canvas.width = document.body.clientWidth;
-canvas.height = document.body.clientHeight;
+canvas.width = document.body.clientWidth / 2;
+canvas.height = document.body.clientHeight / 2;
 
-const width = canvas.width;
-const height = canvas.height;
+const resolutionX = canvas.width;
+const resolutionY = canvas.height;
 
-const resolutionX = width / 2;
-const resolutionY = height * (resolutionX / width);
+canvas.style.width = `${document.body.clientWidth}px`;
+canvas.style.height = `${document.body.clientHeight}px`;
 
 const resolution = { x: resolutionX, y: resolutionY };
-const pixelSize: PixelSize = { x: width / resolutionX, y: height / resolutionY };
 
 const ctx = canvas.getContext('2d');
 
-if(!ctx) throw new Error('Something wrong with canvas');
+if (!ctx) throw new Error('Something wrong with canvas');
 
-const map: GameMap = new GameMap(
-    [
-        '#############',
-        '#...........#',
-        '#...........#',
-        '#...........#',
-        '#...#####...#',
-        '#...#...##..#',
-        '#...#...#...#',
-        '#...##.##...#',
-        '#...........#',
-        '#...........#',
-        '#########.###',
-        '#...........#',
-        '#...........#',
-        '#...........#',
-        '#############',
-    ]
-);
+const map: GameMap = new GameMap([
+    '#############',
+    '#...........#',
+    '#...........#',
+    '#...........#',
+    '#...#####...#',
+    '#...#...##..#',
+    '#...#...#...#',
+    '#...##.##...#',
+    '#...........#',
+    '#...........#',
+    '#########.###',
+    '#...........#',
+    '#...........#',
+    '#...........#',
+    '#############',
+]);
 
 const player = new Player({ x: 2, y: 2, angle: 0 });
-const renderer = new Renderer(map, ctx, resolution, pixelSize, Math.PI * (120/360));
+const renderer = new Renderer(map, ctx, resolution, Math.PI * (120 / 360));
 const game = new Game(map, player, renderer);
 
 prepareDocument(canvas, game);
